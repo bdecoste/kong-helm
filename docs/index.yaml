@@ -1,29 +1,25 @@
 apiVersion: v1
 entries:
-  postgresql:
+  kong:
   - apiVersion: v1
-    appVersion: 11.7.0
-    created: "2021-12-08T09:34:55.156068-08:00"
-    description: Chart for PostgreSQL, an object-relational database management system (ORDBMS) with an emphasis on extensibility and on standards-compliance.
-    digest: 6a100e46fff97cac6faf40b9ff8b473a49af3664233ef8247cf1f67fc8eeddef
-    home: https://www.postgresql.org/
-    icon: https://bitnami.com/assets/stacks/postgresql/img/postgresql-stack-110x117.png
-    keywords:
-    - postgresql
-    - postgres
-    - database
-    - sql
-    - replication
-    - cluster
+    appVersion: "2.6"
+    created: "2021-12-08T09:43:07.702731-08:00"
+    dependencies:
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: https://charts.bitnami.com/bitnami
+      version: 8.6.8
+    description: The Cloud-Native Ingress and API-management
+    digest: a490064d2096d624a4c4604458f2393d59815fb3a160b4d827c1ff6e3cc7b386
+    home: https://konghq.com/
+    icon: https://s3.amazonaws.com/downloads.kong/universe/assets/icon-kong-inc-large.png
     maintainers:
-    - email: containers@bitnami.com
-      name: Bitnami
-    - email: cedric@desaintmartin.fr
-      name: desaintmartin
-    name: postgresql
-    sources:
-    - https://github.com/bitnami/bitnami-docker-postgresql
+    - email: harry@konghq.com
+      name: hbagdi
+    - email: traines@konghq.com
+      name: rainest
+    name: kong
     urls:
-    - https://bdecoste.github.io/charts/postgresql-8.6.8.tgz
-    version: 8.6.8
-generated: "2021-12-08T09:34:55.153188-08:00"
+    - https://bdecoste.github.io/kong-2.6.2.tgz
+    version: 2.6.2
+generated: "2021-12-08T09:43:07.696036-08:00"
