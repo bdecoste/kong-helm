@@ -1,0 +1,67 @@
+image:
+  repository: docker.io/bdecoste/dynamic-endpoint
+  tag: 1.0.0
+#image:
+#  repository: kong/kong-gateway
+#  tag: 2.5.1.0-alpine
+
+env:
+  prefix: /kong_prefix/
+  role: data_plane
+  database: "off"
+  ssl_cert: /etc/secrets/tls-lb/tls.crt
+  ssl_cert_key: /etc/secrets/tls-lb/tls.key
+  cluster_cert: /etc/secrets/kong-cluster-cert/tls.crt
+  cluster_cert_key: /etc/secrets/kong-cluster-cert/tls.key
+  lua_ssl_trusted_certificate: /etc/secrets/kong-cluster-cert/tls.crt
+  cluster_control_plane: kong-cp-kong-cluster.kong.svc.cluster.local:8005
+  cluster_telemetry_endpoint: kong-cp-kong-clustertelemetry.kong.svc.cluster.local:8006
+  log_level: debug
+  admin_api_uri: http://kong-cp-kong-admin.kong.svc.cluster.local:8001
+  password:
+    valueFrom:
+      secretKeyRef:
+        name: kong-enterprise-superuser-password
+        key: password
+  WSRR_HOST: wssrhost
+  WSRR_PORT: wssrport
+  WSRR_VERSION: wssrversion
+  PLUGINS: bundled,dynamic-endpoint
+
+secretVolumes:
+- kong-cluster-cert
+- tls-lb
+
+admin:
+  enabled: false
+   
+proxy:
+  enabled: true
+  type: LoadBalancer
+
+enterprise:
+  enabled: true
+  license_secret: kong-enterprise-license
+  vitals:
+    enabled: false
+  portal:
+    enabled: false
+  rbac:
+    enabled: false
+  smtp:
+    enabled: false
+
+manager:
+  enabled: false
+
+portal:
+  enabled: false
+
+portalapi:
+  enabled: false
+
+postgresql:
+  enabled: false
+
+ingressController:
+  enabled: false

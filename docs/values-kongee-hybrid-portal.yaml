@@ -1,0 +1,131 @@
+image:
+  repository: kong/kong-gateway
+  tag: 2.5.1.0-alpine
+
+env:
+  role: control_plane
+  lua_ssl_trusted_certificate: /etc/ssl/certs/ca-certificates.crt
+  cluster_telemetry_listen: 0.0.0.0:8006
+  cluster_listen: 0.0.0.0:8005
+  cluster_cert: /etc/secrets/kong-cluster-cert/tls.crt
+  cluster_cert_key: /etc/secrets/kong-cluster-cert/tls.key
+  admin_ssl_cert: /etc/secrets/tls-lb/tls.crt
+  admin_ssl_cert_key: /etc/secrets/tls-lb/tls.key
+  admin_gui_ssl_cert: /etc/secrets/tls-lb/tls.crt
+  admin_gui_ssl_cert_key: /etc/secrets/tls-lb/tls.key
+  prefix: /kong_prefix/
+  database: "postgres"
+  pg_user: kong
+  pg_password: kong
+  pg_database: kong
+  pg_host: kong-cp-postgresql.kong.svc.cluster.local
+  admin_api_uri: https://a3c532517649a40f89bb334cdf12f300-1407705398.us-east-2.elb.amazonaws.com/_api
+  admin_gui_url: https://a3c532517649a40f89bb334cdf12f300-1407705398.us-east-2.elb.amazonaws.com
+  portal_gui_host: a3c532517649a40f89bb334cdf12f300-1407705398.us-east-2.elb.amazonaws.com/_portal
+  portal_gui_protocol: https
+  portal_api_url: https://a3c532517649a40f89bb334cdf12f300-1407705398.us-east-2.elb.amazonaws.com/_portalapi
+  log_level: debug
+  password:
+    valueFrom:
+      secretKeyRef:
+        name: kong-enterprise-superuser-password
+        key: password
+
+secretVolumes:
+  - kong-cluster-cert
+  - tls-lb
+
+admin:
+  enabled: false
+
+cluster:
+  enabled: true
+  tls:
+    enabled: true
+    servicePort: 8005
+    containerPort: 8005
+
+clustertelemetry:
+  enabled: false
+  tls:
+    enabled: true
+    servicePort: 8006
+    containerPort: 8006
+  type: ClusterIP
+ 
+proxy:
+  enabled: false
+
+enterprise:
+  enabled: true
+  license_secret: kong-enterprise-license
+  vitals:
+    enabled: false
+  portal:
+    enabled: true
+  rbac:
+    enabled: false
+    admin_gui_auth: openid-connect
+    session_conf_secret: admin-gui-session-conf
+    admin_gui_auth_conf_secret: admin-gui-auth-conf
+  smtp:
+    enabled: false
+
+manager:
+  enabled: false
+
+portal:
+  enabled: true
+
+  annotations:
+    konghq.com/protocol: "https"
+
+  ingress:
+    enabled: true
+    hostname: a3c532517649a40f89bb334cdf12f300-1407705398.us-east-2.elb.amazonaws.com
+    path: /_portal
+    tls: tls-lb
+    annotations:
+      kubernetes.io/ingress.class: "kong"
+      konghq.com/strip-path: "true"
+
+  http:
+    enabled: true
+    servicePort: 8003
+    containerPort: 8003
+
+  tls:
+    enabled: true
+    servicePort: 8446
+    containerPort: 8446
+     
+portalapi:
+  enabled: true
+
+  annotations:
+    konghq.com/protocol: "https"
+
+  ingress:
+    enabled: true
+    hostname: a3c532517649a40f89bb334cdf12f300-1407705398.us-east-2.elb.amazonaws.com
+    path: /_portalapi
+    tls: tls-lb
+    annotations:
+      kubernetes.io/ingress.class: "kong"
+      konghq.com/strip-path: "true"
+
+  http:
+    enabled: true
+    servicePort: 8004
+    containerPort: 8004
+
+  tls:
+    enabled: true
+    servicePort: 8447
+    containerPort: 8447
+
+postgresql:
+  enabled: false
+
+ingressController:
+  enabled: false
