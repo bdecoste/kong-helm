@@ -1,0 +1,155 @@
+image:
+  repository: docker.io/bdecoste/dynamic-endpoint
+  tag: 1.0.0
+
+env:
+  role: control_plane
+  lua_ssl_trusted_certificate: /etc/ssl/certs/ca-certificates.crt
+  cluster_telemetry_listen: 0.0.0.0:8006
+  cluster_listen: 0.0.0.0:8005
+  cluster_cert: /etc/secrets/kong-cluster-cert/tls.crt
+  cluster_cert_key: /etc/secrets/kong-cluster-cert/tls.key
+  admin_ssl_cert: /etc/secrets/tls-lb/tls.crt
+  admin_ssl_cert_key: /etc/secrets/tls-lb/tls.key
+  admin_gui_ssl_cert: /etc/secrets/tls-lb/tls.crt
+  admin_gui_ssl_cert_key: /etc/secrets/tls-lb/tls.key
+  prefix: /kong_prefix/
+  database: "postgres"
+  pg_user: kong
+  pg_password: kong
+  pg_database: kong
+  admin_api_uri: https://a3c532517649a40f89bb334cdf12f300-1407705398.us-east-2.elb.amazonaws.com/_api
+  admin_gui_url: https://a3c532517649a40f89bb334cdf12f300-1407705398.us-east-2.elb.amazonaws.com
+  portal_gui_host: a3c532517649a40f89bb334cdf12f300-1407705398.us-east-2.elb.amazonaws.com/_portal
+  portal_gui_protocol: https
+  portal_api_url: https://a3c532517649a40f89bb334cdf12f300-1407705398.us-east-2.elb.amazonaws.com/_portalapi
+  log_level: debug
+  password:
+    valueFrom:
+      secretKeyRef:
+        name: kong-enterprise-superuser-password
+        key: password
+  WSRR_HOST: wssrhost
+  WSRR_PORT: wssrport
+  WSRR_VERSION: wssrversion
+  PLUGINS: bundled,dynamic-endpoint
+
+secretVolumes:
+  - kong-cluster-cert
+  - tls-lb
+
+admin:
+  enabled: true
+  type: LoadBalancer
+
+  annotations:
+    konghq.com/protocol: "https"
+
+  ingress:
+    enabled: true
+    hostname: a3c532517649a40f89bb334cdf12f300-1407705398.us-east-2.elb.amazonaws.com
+    path: /_api
+    tls: tls-lb
+    annotations:
+      kubernetes.io/ingress.class: "kong"
+      konghq.com/strip-path: "true"
+      
+  http:
+    enabled: true
+    servicePort: 8001
+    containerPort: 8001
+
+  tls:
+    enabled: true
+    servicePort: 8444
+    containerPort: 8444
+
+cluster:
+  enabled: true
+  type: LoadBalancer
+  tls:
+    enabled: true
+    servicePort: 8005
+    containerPort: 8005
+
+clustertelemetry:
+  enabled: true
+  type: LoadBalancer
+  tls:
+    enabled: true
+    servicePort: 8006
+    containerPort: 8006
+ 
+proxy:
+  enabled: false
+
+enterprise:
+  enabled: true
+  license_secret: kong-enterprise-license
+  vitals:
+    enabled: false
+  portal:
+    enabled: true
+  rbac:
+    enabled: false
+    admin_gui_auth: basic-auth
+    session_conf_secret: admin-gui-session-conf
+#    admin_gui_auth_conf_secret: admin-gui-auth-conf
+  smtp:
+    enabled: false
+
+manager:
+  enabled: true
+  type: NodePort
+
+  annotations:
+    konghq.com/protocol: "https"
+    
+  ingress:
+    enabled: true
+    hostname: a3c532517649a40f89bb334cdf12f300-1407705398.us-east-2.elb.amazonaws.com
+    path: /
+    tls: tls-lb
+    annotations:
+      kubernetes.io/ingress.class: "kong"
+
+  http:
+    enabled: true
+
+  tls:
+    enabled: true
+    servicePort: 8445
+    containerPort: 8445
+
+portal:
+  enabled: false
+
+portalapi:
+  enabled: false
+
+postgresql:
+  enabled: true
+  postgresqlUsername: kong
+  postgresqlPassword: kong
+  postgresqlDatabase: kong
+  securityContext:
+    enabled: true
+    runAsUser: 1000940000
+    fsGroup: 1000940000
+  service:
+    port: 5432
+
+ingressController:
+  enabled: true
+  installCRDs: false
+  env:
+    publish_service: kong/kong-dp-kong-proxy
+    kong_admin_token:
+      valueFrom:
+        secretKeyRef:
+          name: kong-enterprise-superuser-password
+          key: password
+    WSRR_HOST: wssrhost
+    WSRR_PORT: wssrport
+    WSRR_VERSION: wssrversion
+    PLUGINS: bundled,dynamic-endpoint
