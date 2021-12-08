@@ -3,7 +3,7 @@ entries:
   kong:
   - apiVersion: v1
     appVersion: "2.6"
-    created: "2021-12-08T09:43:07.702731-08:00"
+    created: "2021-12-08T09:49:28.227673-08:00"
     dependencies:
     - condition: postgresql.enabled
       name: postgresql
@@ -20,6 +20,6 @@ entries:
       name: rainest
     name: kong
     urls:
-    - https://bdecoste.github.io/kong-2.6.2.tgz
+    - https://bdecoste.github.io/kong-helm/kong-2.6.2.tgz
     version: 2.6.2
-generated: "2021-12-08T09:43:07.696036-08:00"
+generated: "2021-12-08T09:49:28.221573-08:00"
