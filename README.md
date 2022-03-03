@@ -11,10 +11,10 @@ This chart bootstraps all the components needed to run Kong on a
 ## TL;DR;
 
 ```bash
-$ helm repo add kong https://charts.konghq.com
+$ helm repo add kong-argocd https://bdecoste.github.io/kong-helm/
 $ helm repo update
 
-$ helm install kong/kong --generate-name
+$ helm install kong-argocd/kong --generate-name
 ```
 
 ## Table of contents
