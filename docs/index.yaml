@@ -3,7 +3,7 @@ entries:
   kong:
   - apiVersion: v1
     appVersion: "2.6"
-    created: "2022-03-16T13:50:25.804684-07:00"
+    created: "2022-03-16T14:27:48.222428-07:00"
     dependencies:
     - condition: postgresql.enabled
       name: postgresql
@@ -20,6 +20,6 @@ entries:
       name: rainest
     name: kong
     urls:
-    - kong-2.6.11.tgz
+    - kong-helm-2.6.11.tgz
     version: 2.6.11
-generated: "2022-03-16T13:50:25.798148-07:00"
+generated: "2022-03-16T14:27:48.213421-07:00"
